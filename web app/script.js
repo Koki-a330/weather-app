@@ -1,18 +1,34 @@
 "use strict";
 document.addEventListener("DOMContentLoaded", function () {
-  let apiKey = "ca93fd5ab0712775957213696d550d58"; // OpenWeatherMapのAPIキー
+  let apiKey = "ca93fd5ab0712775957213696d550d58";
   const weatherInfo = document.getElementById("weather-info");
   const dateInfo = document.getElementById("date-info");
+  const moodInfo = document.getElementById("mood-info");
   const weatherImage = document.getElementById("weather-image");
   const fetchWeatherBtn = document.getElementById("fetch-weather");
 
-  // 現在の日付を表示
+  // ✅ updateDate をこの中に1つだけ定義！
   function updateDate() {
     const today = new Date();
     dateInfo.textContent = `日付: ${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+
+    const moods = [
+      "機嫌がいい",
+      "機嫌がちょっといい",
+      "機嫌がちょっと悪い",
+      "機嫌が悪い",
+      "忙しい",
+      "元気です"
+    ];
+
+    const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+    const randomIndex = seed % moods.length;
+
+    moodInfo.textContent = `修一: ${moods[randomIndex]}`;
   }
 
-  // 緯度・経度をもとに天気情報を取得する関数
+  updateDate(); // ← 正しく動く！
+
   async function fetchWeatherByCoords(lat, lon) {
     const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=ja`;
 
@@ -36,7 +52,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // 現在地（GPS）を取得して天気情報を取りにいく関数
   function fetchWeather() {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -44,7 +59,6 @@ document.addEventListener("DOMContentLoaded", function () {
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
 
-          // デバッグ：緯度・経度の出力
           console.log("取得した緯度 (latitude):", lat);
           console.log("取得した経度 (longitude):", lon);
 
@@ -60,9 +74,5 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // ボタンをクリックしたら天気を取得
   fetchWeatherBtn.addEventListener("click", fetchWeather);
-
-  // 初期表示
-  updateDate();
 });
